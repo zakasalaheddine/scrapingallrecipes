@@ -1,5 +1,5 @@
 const Recipe = require('../../models/Recipe');
-const allRecipes = require('../../allRecipes/scraping');
+const allRecipes = require('../../helpers/allRecipes');
 
 const RecipesResolver = {
     getRecipeInfo: async ({ url, name }) => {
