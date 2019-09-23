@@ -74,28 +74,23 @@ module.exports = {
                     ingredients.push(ingredient);
             });
             const singleRecipeDirections = $('li[class="step"]');
-            console.log(singleRecipeDirections.length);
             const directions = [];
             await singleRecipeDirections.map(async (index, item) => {
-                const direction = await $('.section-body > p', item).text();
-                console.log(direction);
-                directions.push(direction);
+                const direction = await $('.recipe-directions__list--item', item).text().trim();
+                if(direction)
+                    directions.push(direction);
             });
-            console.log(directions)
-            const recipeSummary = await $('.recipe-summary > p').text();
-            const recipeInfos = await $('.recipe-meta-item');
-            const listInfos = [];
-            recipeInfos.map(async (index, item) => {
-                const header = await $('.recipe-meta-item-header', item)
-                    .text().trim();
-                const value = await $('.recipe-meta-item-body', item).text().trim();
-                const info = {
-                    header,
-                    value
-                };
-                listInfos.push(info);
-            });
-            Promise.resolve(new Recipe(url, title, recipeSummary, listInfos, ingredients, directions));
+            const recipeSummary = await $('.submitter__description').text();
+            const timeToMake = await $('.ready-in-time').text();
+            const servingCount = await $('#metaRecipeServings').attr('content');
+            const cals = await $('.calorie-count').attr('aria-label');
+
+            const listInfos = {
+                timeToMake,
+                serving: servingCount + ' servings',
+                cals, 
+            };
+            return Promise.resolve(new Recipe(url, title, recipeSummary, listInfos, ingredients, directions));
         } catch (err) {
             throw err;
         }
