@@ -83,7 +83,21 @@ module.exports = {
                 if (direction)
                     directions.push(direction);
             });
-            const recipeSummary = await $('.submitter__description').text();
+
+            const recipeImages = $('ul[class="photo-strip__items"] li');
+            const images = [];
+            await recipeImages.map(async (index, item) => {
+                var image = await $('img', item).attr('src');
+                image = image.split('/');
+                image = 'https://images.media-allrecipes.com/userphotos/300x300/' + image[image.length - 1];
+                console.log(images.includes(image));
+                if(!images.includes(image)){
+                    images.push(image);
+                }
+            });
+
+            console.log(images);
+            const recipeSummary = await $('.submitter__description').text().trim();
             const timeToMake = await $('.ready-in-time').text();
             const servingCount = await $('#metaRecipeServings').attr('content');
             const cals = await $('.calorie-count').attr('aria-label');
@@ -93,7 +107,7 @@ module.exports = {
                 serving: servingCount + ' servings',
                 cals,
             };
-            return Promise.resolve(new Recipe(url, title, recipeSummary, listInfos, ingredients, directions));
+            return Promise.resolve(new Recipe(url, title, recipeSummary, listInfos, ingredients, directions, images));
         } catch (err) {
             throw err;
         }

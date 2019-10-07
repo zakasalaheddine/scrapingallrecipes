@@ -11,7 +11,7 @@ module.exports = buildSchema(`
     type Recipe{
         name: String
         url: String!
-        image: String
+        images: [String]
         summary: String
         infos: RecipeInfos
         ingredients: [String]
