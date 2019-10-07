@@ -7,7 +7,6 @@ const Recipe = class Recipe {
         this.infos = infos;
         this.ingredients = ingredients;
         this.directions = directions;
-
     }
 };
 

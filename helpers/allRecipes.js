@@ -9,8 +9,10 @@ module.exports = {
         const res = await fetch(url);
         return res.text();
     },
-    getCategories: async html => {
+    getCategories: async () => {
         try {
+            const res = await fetch('https://www.allrecipes.com/recipes/');
+            const html = await res.text();
             const $ = await cheerio.load(html);
             const sections = $('.all-categories-col > section');
             if (!sections.length || sections.length <= 0)
@@ -23,7 +25,6 @@ module.exports = {
                     elements.map(async (index, element) => {
                         const categoryName = await $('a', element).text();
                         const categoryUrl = await $('a', element).attr('href');
-                        // console.log(new Category(sectionName, categoryName, categoryUrl));
                         categories.push(new Category(sectionName, categoryName, categoryUrl));
                     });
                 }
@@ -34,12 +35,13 @@ module.exports = {
         }
 
     },
-    getRecipesFromCategory: async (selectedCategory, page = null) => {
+    getRecipesFromCategory: async (categoryURL, page = null) => {
         try {
-            let url = selectedCategory.url;
+            let url = categoryURL;
             if (page)
                 url += '/?page=' + page;
-            const html = await module.exports.loadData(url);
+            const res = await fetch(url);
+            const html = await res.text();
             const $ = await cheerio.load(html);
             const recipes = await $('.fixed-recipe-card');
             if (!recipes.length || recipes.length <= 0)
@@ -52,7 +54,7 @@ module.exports = {
                     .text();
                 listRecipes.push({
                     image: recipeImage,
-                    title: recipeTitle
+                    name: recipeTitle
                         .trim(),
                     url: recipeUrl
                 });
@@ -62,22 +64,23 @@ module.exports = {
             throw err;
         }
     },
-    getRecipeInfos: async ({image, title, url}) => {
+    getRecipeInfos: async (url, title) => {
         try {
-            const html = await module.exports.loadData(url);
+            const res = await fetch(url);
+            const html = await res.text();
             const $ = await cheerio.load(html);
             const singleRecipeIngredients = await $('.checkList__line');
             const ingredients = [];
             await singleRecipeIngredients.map(async (index, item) => {
                 const ingredient = await $('label', item).attr('title');
-                if(ingredient)
+                if (ingredient)
                     ingredients.push(ingredient);
             });
             const singleRecipeDirections = $('li[class="step"]');
             const directions = [];
             await singleRecipeDirections.map(async (index, item) => {
                 const direction = await $('.recipe-directions__list--item', item).text().trim();
-                if(direction)
+                if (direction)
                     directions.push(direction);
             });
             const recipeSummary = await $('.submitter__description').text();
@@ -88,7 +91,7 @@ module.exports = {
             const listInfos = {
                 timeToMake,
                 serving: servingCount + ' servings',
-                cals, 
+                cals,
             };
             return Promise.resolve(new Recipe(url, title, recipeSummary, listInfos, ingredients, directions));
         } catch (err) {

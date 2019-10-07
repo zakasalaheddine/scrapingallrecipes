@@ -2,18 +2,31 @@ const Recipe = require('../../models/Recipe');
 const allRecipes = require('../../helpers/allRecipes');
 
 const RecipesResolver = {
-    getRecipeInfo: async ({ url, name }) => {
+    getRecipeInfo: async ({ url, title }) => {
         
-        console.log(url);
         try {
-            const res = allRecipes.getRecipeContent(url);
-            console.log(res);
-            // const newRecipe = await new Recipe(url, name);
-            // return newRecipe;
+            const res = await allRecipes.getRecipeInfos(url, title);
+            return res;
         } catch (err) {
             throw err;
         }
 
+    },
+    getCategories: async () => {
+        try {
+            const res = await allRecipes.getCategories();
+            return res;
+        } catch (err) {
+            throw err;
+        }
+    },
+    getRecipesByCategory: async ({ url, page }) => {
+        try {
+            const res = await allRecipes.getRecipesFromCategory(url, page);
+            return res;
+        } catch (err) {
+            throw err;
+        }
     }
 };
 

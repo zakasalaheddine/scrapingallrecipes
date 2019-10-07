@@ -3,22 +3,32 @@ const { buildSchema } = require('graphql');
 module.exports = buildSchema(`
 
     type RecipeInfos{
-        title: String!
-        value: String!
+        timeToMake: String
+        serving: String
+        cals: String
     }
 
     type Recipe{
+        name: String
+        url: String!
+        image: String
+        summary: String
+        infos: RecipeInfos
+        ingredients: [String]
+        directions: [String]
+    }
+
+    type Category {
+        section: String!
         name: String!
         url: String!
-        summary: String
-        infos: [RecipeInfos!]!
-        ingredients: [String!]!
-        directions: [String!]!
     }
 
 
     type Query {
-        getRecipeInfo(url: String!, name: String!): Recipe
+        getRecipeInfo(url: String!, title: String!): Recipe
+        getCategories : [Category]
+        getRecipesByCategory(url: String!, page: Int) : [Recipe]
     }
 
     schema{
